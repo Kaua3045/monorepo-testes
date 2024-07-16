@@ -22,10 +22,13 @@ jobs:
             SERVICE=$LABEL
           fi
           
-          echo "::set-output name=service::$SERVICE"
+          echo "{name}={service}" >> $GITHUB_OUTPUT
+#          echo "::set-output name=service::$SERVICE"
 
       - name: Trigger CI for labeled service
         if: ${{ steps.check-label.outputs.service }}
+        env:
+          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
         run: |
             SERVICE=${{ steps.check-label.outputs.service }}
             gh workflow run "${SERVICE}-ci.yml" -f pr_number=${{ github.event.number }}
