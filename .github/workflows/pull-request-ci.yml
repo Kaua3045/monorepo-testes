@@ -18,17 +18,20 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}')
+          labels=$(echo "${{ github.event.pull_request.labels }}" | jq -r '.[].name')
           
-          modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | rtrimstr("-modified")')
+          modified_labels=()
+          for label in $labels; do
+            if [[ $label == *"-modified" ]]; then
+              modified_labels+=("${label%-modified}")
+            fi
+          done
 
-          if [ -z "$modified_labels" ]; then
+          if [ ${#modified_labels[@]} -gt 0 ]; then
+            echo "modified_labels=$(IFS=,; echo "${modified_labels[*]}")" >> $GITHUB_ENV
+          else
             echo "No modified labels found."
-            exit 0
           fi
-
-          modified_labels_string=$(echo "$modified_labels" | tr '\n' ' ')
-          echo "modified_labels=$modified_labels_string" >> $GITHUB_ENV
 
       - name: Trigger CI for labeled service
         if: ${{ steps.check-label.outputs.service }}
