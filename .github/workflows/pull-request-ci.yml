@@ -15,6 +15,7 @@ jobs:
         run: |
           json_input='{"label": {"name": "example-service-modified"}}'
           LABEL=$(jq -r '.label.name' <<< "$json_input")
+          echo $LABEL
           
           if [[ "$LABEL" == *-modified ]]; then
             SERVICE=${LABEL%-modified}
@@ -22,7 +23,7 @@ jobs:
             SERVICE=$LABEL
           fi
           
-          echo "{name}={service}" >> $GITHUB_OUTPUT
+          echo "name={service}" >> $GITHUB_OUTPUT
 #          echo "::set-output name=service::$SERVICE"
 
       - name: Trigger CI for labeled service
