@@ -19,8 +19,13 @@ jobs:
         id: check-label
         run: |
           labels=$(echo '${{ toJson(github.event.pull_request.labels) }}')
+          
+          # Extract label names that end with '-modified' and remove the suffix
           modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | rtrimstr("-modified")')
-          echo "modified_labels=$modified_labels" >> $GITHUB_ENV
+          
+          # Join labels into a single string separated by spaces
+          modified_labels_string=$(echo "$modified_labels" | tr '\n' ' ')
+          echo "modified_labels=$modified_labels_string" >> $GITHUB_ENV
 
       - name: Trigger CI for labeled service
         if: ${{ steps.check-label.outputs.service }}
