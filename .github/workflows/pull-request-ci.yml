@@ -1,4 +1,4 @@
-name: Main CI
+name: Pull Request CI
 
 on:
   pull_request:
@@ -13,13 +13,16 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-            LABEL=$(jq -r '.label.name' <<< "${{ github.event }}")
-            if [[ "$LABEL" == *-modified ]]; then
-              SERVICE=${LABEL%-modified}
-              echo "::set-output name=service::$SERVICE"
-            else
-              echo "::set-output name=service::"
-            fi
+          json_input='{"label": {"name": "example-service-modified"}}'
+          LABEL=$(jq -r '.label.name' <<< "$json_input")
+          
+          if [[ "$LABEL" == *-modified ]]; then
+            SERVICE=${LABEL%-modified}
+          else
+            SERVICE=$LABEL
+          fi
+          
+          echo "::set-output name=service::$SERVICE"
 
       - name: Trigger CI for labeled service
         if: ${{ steps.check-label.outputs.service }}
