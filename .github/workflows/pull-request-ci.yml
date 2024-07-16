@@ -8,7 +8,9 @@ on:
 
 jobs:
   trigger-service-workflows:
+    name: Trigger CI for labeled service
     runs-on: ubuntu-latest
+
     steps:
       - name: Check if service label exists
         id: check-label
