@@ -16,14 +16,11 @@ jobs:
         id: check-label
         run: |
           labels=$(echo "${{ github.event.pull_request.labels }}" | jq -r '.[].name')
-          echo $labels
           
           modified_labels=$(echo "$labels" | grep '-modified$' | sed 's/-modified$//')
-          echo $modified_labels
           
           if [[ -n "$modified_labels" ]]; then
-              echo "name={service}" >> $GITHUB_OUTPUT
-              echo "::set-output name=service::$modified_labels"
+              echo "::set-output name=service::$service"
           fi
 
       - name: Trigger CI for labeled service
