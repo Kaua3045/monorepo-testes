@@ -15,10 +15,10 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
+          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}')
           
-          # Filter labels ending with '-modified' and remove the suffix
-          modified_labels=$(echo "$labels" | grep '-modified$' | sed 's/-modified$//')
+          # Extract label names using jq
+          modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | rtrimstr("-modified")')
           
           # Set the modified labels as an output if not empty
           if [[ -n "$modified_labels" ]]; then
