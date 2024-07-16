@@ -13,17 +13,24 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-          json_input='{"label": {"name": "example-service-modified"}}'
-          LABEL=$(jq -r '.label.name' <<< "$json_input")
-          echo $LABEL
+          labels=$(echo "${{ github.event.pull_request.labels }}" | jq -r '.[].name')
+          echo $labels
           
-          if [[ "$LABEL" == *-modified ]]; then
-            SERVICE=${LABEL%-modified}
-          else
-            SERVICE=$LABEL
+          modified_labels=$(echo "$labels" | grep '-modified$' | sed 's/-modified$//')
+          echo $modified_labels
+          
+          if [[ -n "$modified_labels" ]]; then
+              echo "name={service}" >> $GITHUB_OUTPUT
+#              echo "::set-output name=service::$modified_labels"
           fi
-          
-          echo "name={service}" >> $GITHUB_OUTPUT
+
+#          if [[ "$LABEL" == *-modified ]]; then
+#            SERVICE=${LABEL%-modified}
+#          else
+#            SERVICE=$LABEL
+#          fi
+#
+#          echo "name={service}" >> $GITHUB_OUTPUT
 #          echo "::set-output name=service::$SERVICE"
 
       - name: Trigger CI for labeled service
