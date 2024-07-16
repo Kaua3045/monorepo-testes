@@ -15,12 +15,14 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-          labels=$(echo "${{ github.event.pull_request.labels }}" | jq -r '.[].name')
+          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name')
           
+          # Filter labels ending with '-modified' and remove the suffix
           modified_labels=$(echo "$labels" | grep '-modified$' | sed 's/-modified$//')
           
+          # Set the modified labels as an output if not empty
           if [[ -n "$modified_labels" ]]; then
-              echo "::set-output name=service::$service"
+              echo "::set-output name=service::$modified_labels"
           fi
 
       - name: Trigger CI for labeled service
