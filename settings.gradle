@@ -1,2 +1,4 @@
 rootProject.name = 'monorepo-testes'
+include 'account-command-ms'
+include 'inventory-command-ms'
 

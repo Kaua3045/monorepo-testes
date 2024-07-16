@@ -1,0 +1,28 @@
+name: Main CI
+
+on:
+  pull_request:
+    branches:
+      - '*'
+    types: [labeled]
+
+jobs:
+  trigger-service-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if service label exists
+        id: check-label
+        run: |
+            LABEL=$(jq -r '.label.name' <<< "${{ github.event }}")
+            if [[ "$LABEL" == *-modified ]]; then
+              SERVICE=${LABEL%-modified}
+              echo "::set-output name=service::$SERVICE"
+            else
+              echo "::set-output name=service::"
+            fi
+
+      - name: Trigger CI for labeled service
+        if: ${{ steps.check-label.outputs.service }}
+        run: |
+            SERVICE=${{ steps.check-label.outputs.service }}
+            gh workflow run "${SERVICE}-ci.yml" -f pr_number=${{ github.event.number }}

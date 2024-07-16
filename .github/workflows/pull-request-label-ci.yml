@@ -1,0 +1,20 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    branches:
+      - '*'
+    types: [opened, synchronize, reopened]
+
+jobs:
+  labelPR:
+    name: Add microservice modified label in PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Add label
+        uses: tinkurlab/monorepo-pr-labeler-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
+        with:
+          suffix: '-modified'
