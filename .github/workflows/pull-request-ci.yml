@@ -21,17 +21,8 @@ jobs:
           
           if [[ -n "$modified_labels" ]]; then
               echo "name={service}" >> $GITHUB_OUTPUT
-#              echo "::set-output name=service::$modified_labels"
+              echo "::set-output name=service::$modified_labels"
           fi
-
-#          if [[ "$LABEL" == *-modified ]]; then
-#            SERVICE=${LABEL%-modified}
-#          else
-#            SERVICE=$LABEL
-#          fi
-#
-#          echo "name={service}" >> $GITHUB_OUTPUT
-#          echo "::set-output name=service::$SERVICE"
 
       - name: Trigger CI for labeled service
         if: ${{ steps.check-label.outputs.service }}
