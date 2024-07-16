@@ -18,18 +18,16 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-          labels=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
-          
-          modified_labels=()
+          labels=$(echo "${{ toJson(github.event.pull_request.labels) }}")
 
-          for label in $labels; do
-            if [[ $label == *"-modified" ]]; then
-              modified_labels+=("${label%-modified}")
-            fi
-          done
+          echo "Labels JSON: $labels"
 
-          if [ ${#modified_labels[@]} -gt 0 ]; then
-            echo "modified_labels=$(IFS=,; echo "${modified_labels[*]}")" >> $GITHUB_ENV
+          modified_labels=$(echo "$labels" | jq -r '.[].name | select(endswith("-modified")) | sub("-modified$"; "")')
+
+          echo "Modified Labels: $modified_labels"
+
+          if [ -n "$modified_labels" ]; then
+            echo "modified_labels=$modified_labels" >> $GITHUB_ENV
           else
             echo "No modified labels found."
           fi
