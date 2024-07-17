@@ -5,6 +5,7 @@ on:
     workflows: [ "Pull Request Label CI" ]
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   trigger-service-workflows:
