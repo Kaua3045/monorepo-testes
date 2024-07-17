@@ -3,7 +3,13 @@ name: Pull Request Label CI
 on:
   pull_request:
     branches:
-      - '*'
+      - main
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+      - bugfix/*
+      - refactor/*
     types: [opened, synchronize, reopened]
 
 jobs:
