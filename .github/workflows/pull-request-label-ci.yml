@@ -41,6 +41,7 @@ jobs:
 
           if [ -n "$modified_labels" ]; then
             echo "modified_labels=$modified_labels" >> $GITHUB_ENV
+            echo "::set-output name=modified_labels::$modified_labels"
           else
             echo "No modified labels found."
           fi
@@ -49,8 +50,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
         run: |
-          echo "Modified Labels: ${{ steps.check-label.outputs.modified_labels }}"
-          for MODULE in ${{ steps.check-label.outputs.modified_labels }}; do
+          modified_labels="${{ steps.check-label.outputs.modified_labels }}"
+          echo "Modified Labels: $modified_labels"
+          IFS=',' read -ra MODULES <<< "$modified_labels"
+          for MODULE in "${MODULES[@]}"; do
             echo "Triggering workflow for $MODULE"
             curl -X POST \
               -H "Accept: application/vnd.github.v3+json" \
