@@ -35,18 +35,18 @@ jobs:
         id: check_new_workflows
         run: |
           if git rev-parse HEAD^ >/dev/null 2>&1; then
-          new_files=$(git diff --diff-filter=A --name-only HEAD^ HEAD .github/workflows/*.yml)
+            new_files=$(git diff --diff-filter=A --name-only HEAD^ HEAD .github/workflows/*.yml)
           else
-          new_files=$(git ls-files --others --exclude-standard .github/workflows/*.yml)
+            new_files=$(git ls-files --others --exclude-standard .github/workflows/*.yml)
           fi
 
           if [ -n "$new_files" ]; then
-          echo "New workflows found:"
-          echo "$new_files"
-          echo "::set-output name=new_workflows::$new_files"
+            echo "New workflows found:"
+            echo "$new_files"
+            echo "new_workflows=$new_files" >> $GITHUB_ENV
           else
-          echo "No new workflows found."
-          echo "::set-output name=new_workflows::"
+            echo "No new workflows found."
+            echo "new_workflows=" >> $GITHUB_ENV
           fi
 
       - name: Check if service label exists
