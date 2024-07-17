@@ -44,10 +44,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
         run: |
-          modified_labels="${{ steps.check-label.outputs.modified_labels }}"
-          echo "Modified Labels: $modified_labels"
-          IFS=',' read -ra MODULES <<< "$modified_labels"
-          for MODULE in "${MODULES[@]}"; do
-            echo "Triggering workflow for $MODULE"
-            gh workflow run ${MODULE}-ci.yml --ref "${{ github.event.pull_request.head.ref }}"
-          done
+#          modified_labels="${{ steps.check-label.outputs.modified_labels }}"
+#          echo "Modified Labels: $modified_labels"
+#          IFS=',' read -ra MODULES <<< "$modified_labels"
+#          for MODULE in "${MODULES[@]}"; do
+#            echo "Triggering workflow for $MODULE"
+##            gh workflow run ${MODULE}-ci.yml --ref "${{ github.event.pull_request.head.ref }}"
+#          done
