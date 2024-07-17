@@ -29,6 +29,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Check for new workflows
+        id: check_new_workflows
+        run: |
+            new_files=$(git diff --diff-filter=A --name-only HEAD^ HEAD .github/workflows/*.yml)
+            if [ -n "$new_files" ]; then
+              echo "New workflows found:"
+              echo "$new_files"
+              echo "::set-output name=new_workflows::$new_files"
+            else
+              echo "No new workflows found."
+              echo "::set-output name=new_workflows::"
+            fi
+
       - name: Check if service label exists
         id: check-label
         env:
