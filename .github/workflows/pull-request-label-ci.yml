@@ -51,7 +51,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
         run: |
-            gh workflow list
+            gh workflow list --all
             modified_labels="${{ steps.check-label.outputs.modified_labels }}"
             echo "Modified Labels: $modified_labels"
             IFS=',' read -ra MODULES <<< "$modified_labels"
