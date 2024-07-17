@@ -31,30 +31,26 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-          echo "PR labels: ${{ github.event.pull_request.labels }}"
-          MODIFIED_LABELS=$(echo "${{ github.event.pull_request.labels }}" | grep -oE '\b\w+-modified\b' | sed 's/-modified//')
-          echo "Modified labels: ${MODIFIED_LABELS}"
-          echo "::set-output name=modules::${MODIFIED_LABELS}}"
-#          labels=$(echo "${{ toJson(github.event.pull_request.labels) }}")
-#
-#          echo "Labels JSON: $labels"
-#
-#          modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | sub("-modified$"; "")')
-#
-#          echo "Modified Labels: $modified_labels"
-#
-#          if [ -n "$modified_labels" ]; then
-#            echo "modified_labels=$modified_labels" >> $GITHUB_ENV
-#          else
-#            echo "No modified labels found."
-#          fi
+          labels=$(echo "${{ toJson(github.event.pull_request.labels) }}")
+
+          echo "Labels JSON: $labels"
+
+          modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | sub("-modified$"; "")')
+
+          echo "Modified Labels: $modified_labels"
+
+          if [ -n "$modified_labels" ]; then
+            echo "modified_labels=$modified_labels" >> $GITHUB_ENV
+          else
+            echo "No modified labels found."
+          fi
 
       - name: Trigger CI for labeled service
-        if: ${{ steps.check-label.outputs.service }}
         env:
           GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
         run: |
-          for MODULE in ${{ steps.get_labels.outputs.modules }}; do
+          echo "Modified Labels: ${{ steps.check-label.outputs.modified_labels }}"
+          for MODULE in ${{ steps.check-label.outputs.modified_labels }}; do
             echo "Triggering workflow for $MODULE"
             curl -X POST \
               -H "Accept: application/vnd.github.v3+json" \
