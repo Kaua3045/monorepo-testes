@@ -19,19 +19,42 @@ jobs:
         with:
           suffix: '-modified'
 
-  get-labels:
+  trigger-service-workflows:
+    name: Trigger CI for labeled service
     needs:
       - labelPR
-
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Test
+      - name: Check if service label exists
+        id: check-label
         env:
-          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+            GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
         run: |
           labels=$(gh pr view "${{ github.event.pull_request.number }}" --json labels -q '.labels|map(.name)')
           echo "labels: $labels"
+          
+          modified_labels=$(echo "$labels" | jq -r '[.[] | select(.name | endswith("-modified")) | .name | sub("-modified$"; "")] | join(",")')
+          echo "Modified Labels: $modified_labels"
+          
+          if [ -n "$modified_labels" ]; then
+            echo "modified_labels=$modified_labels" >> $GITHUB_ENV
+            echo "::set-output name=modified_labels::$modified_labels"
+          else
+            echo "No modified labels found."
+          fi
+
+      - name: Trigger CI for labeled service
+        env:
+          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+        run: |
+      #          modified_labels="${{ steps.check-label.outputs.modified_labels }}"
+      #          echo "Modified Labels: $modified_labels"
+      #          IFS=',' read -ra MODULES <<< "$modified_labels"
+      #          for MODULE in "${MODULES[@]}"; do
+      #            echo "Triggering workflow for $MODULE"
+      ##            gh workflow run ${MODULE}-ci.yml --ref "${{ github.event.pull_request.head.ref }}"
+      #          done
