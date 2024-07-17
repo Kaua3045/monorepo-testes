@@ -1,44 +1,44 @@
-name: Pull Request CI
-
-on:
-  pull_request:
-    branches:
-      - '*'
-    types: [labeled, synchronize]
-
-jobs:
-  trigger-service-workflows:
-    name: Trigger CI for labeled service
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Check if service label exists
-        id: check-label
-        run: |
-          labels=$(echo "${{ toJson(github.event.pull_request.labels) }}")
-          
-          echo "Labels JSON: $labels"
-          
-          modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | sub("-modified$"; "")')
-
-          echo "Modified Labels: $modified_labels"
-
-          if [ -n "$modified_labels" ]; then
-            echo "modified_labels=$modified_labels" >> $GITHUB_ENV
-          else
-            echo "No modified labels found."
-          fi
-
-      - name: Trigger CI for labeled service
-        if: ${{ steps.check-label.outputs.service }}
-        env:
-          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
-        run: |
-          IFS=' ' read -r -a services <<< "$modified_labels"
-          for service in "${services[@]}"; do
-            echo "Triggering CI/CD for: $service"
-            gh workflow run "${service}-ci.yml" -f pr_number=${{ github.event.pull_request.number }}
-          done
+#name: Pull Request CI
+#
+#on:
+#  pull_request:
+#    branches:
+#      - '*'
+#    types: [labeled, synchronize]
+#
+#jobs:
+#  trigger-service-workflows:
+#    name: Trigger CI for labeled service
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v3
+#
+#      - name: Check if service label exists
+#        id: check-label
+#        run: |
+#          labels=$(echo "${{ toJson(github.event.pull_request.labels) }}")
+#
+#          echo "Labels JSON: $labels"
+#
+#          modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | sub("-modified$"; "")')
+#
+#          echo "Modified Labels: $modified_labels"
+#
+#          if [ -n "$modified_labels" ]; then
+#            echo "modified_labels=$modified_labels" >> $GITHUB_ENV
+#          else
+#            echo "No modified labels found."
+#          fi
+#
+#      - name: Trigger CI for labeled service
+#        if: ${{ steps.check-label.outputs.service }}
+#        env:
+#          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+#        run: |
+#          IFS=' ' read -r -a services <<< "$modified_labels"
+#          for service in "${services[@]}"; do
+#            echo "Triggering CI/CD for: $service"
+#            gh workflow run "${service}-ci.yml" -f pr_number=${{ github.event.pull_request.number }}
+#          done

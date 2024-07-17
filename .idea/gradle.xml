@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/account-command-ms" />
+            <option value="$PROJECT_DIR$/inventory-command-ms" />
           </set>
         </option>
       </GradleProjectSettings>
