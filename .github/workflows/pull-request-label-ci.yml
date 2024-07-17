@@ -18,3 +18,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACTION_TOKEN }}
         with:
           suffix: '-modified'
+
+      - name: Test
+        env:
+          GH_TOKEN: ${{ secrets.ACTION_TOKEN }}
+        run: |
+          labels=$(gh pr view "$NUMBER" --json labels -q '.labels|map(.name)')
+          echo "labels: $labels"

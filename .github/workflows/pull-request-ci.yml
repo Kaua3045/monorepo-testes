@@ -4,7 +4,15 @@ on:
   pull_request:
     branches:
       - '*'
-    types: [labeled, synchronize]
+    types: [labeled]
+#  workflow_run:
+#    types:
+#      - completed
+#    workflows:
+#      - "Pull Request Label CI"
+    # This will trigger the workflow when a label is added to the PR
+    # need syncronize to trigger the workflow when a label is removed
+    # syncronize to trigger the workflow when new code is pushed to the PR
 
 jobs:
   trigger-service-workflows:
