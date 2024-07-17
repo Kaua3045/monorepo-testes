@@ -31,8 +31,8 @@ jobs:
       - name: Check if service label exists
         id: check-label
         run: |
-          labels=$(echo "${{ toJson(github.event.pull_request.labels) }}")
-
+          labels=$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -c '.')
+          
           echo "Labels JSON: $labels"
 
           modified_labels=$(echo "$labels" | jq -r '.[] | select(.name | endswith("-modified")) | .name | sub("-modified$"; "")')
