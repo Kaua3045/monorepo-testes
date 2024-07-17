@@ -2,8 +2,6 @@ name: Pull Request Label CI
 
 on:
   pull_request:
-    paths:
-      - .github/workflows/*.yml
     branches:
       - '*'
     types: [opened, synchronize, reopened]
@@ -30,24 +28,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Check for new workflows
-        id: check_new_workflows
-        run: |
-          if git rev-parse HEAD^ >/dev/null 2>&1; then
-            new_files=$(git diff --diff-filter=A --name-only HEAD^ HEAD .github/workflows/*.yml)
-          else
-            new_files=$(git ls-files --others --exclude-standard .github/workflows/*.yml)
-          fi
-
-          if [ -n "$new_files" ]; then
-            echo "New workflows found:"
-            echo "$new_files"
-            echo "new_workflows=$new_files" >> $GITHUB_ENV
-          else
-            echo "No new workflows found."
-            echo "new_workflows=" >> $GITHUB_ENV
-          fi
 
       - name: Check if service label exists
         id: check-label
