@@ -8,5 +8,6 @@ public class SampleTest {
     @Test
     void testSum() {
         Assertions.assertEquals(2, 1 + 1);
+        Assertions.assertEquals(4, 2 + 2);
     }
 }
